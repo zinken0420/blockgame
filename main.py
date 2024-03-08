@@ -86,6 +86,27 @@ class Score(pygame.sprite.Sprite):
     def update(self):
         self.image = self.font.render(f"Score: {self.score}", True, WHITE)
 
+    def save_score(self):
+        with open("scores.txt", "a") as file:
+            file.write(str(self.score) + "\n")
+        # ゲームオーバー時にスコアを保存
+        # save_score(self.score)  # この行は不要です
+
+    @staticmethod
+    def display_ranking():
+        try:
+            with open("scores.txt", "r") as file:
+                scores = [int(line.strip()) for line in file.readlines()]
+                scores.sort(reverse=True)
+                print("Top 10 Scores:")
+                for i, score in enumerate(scores[:10], start=1):
+                    print(f"{i}. {score}")
+        except FileNotFoundError:
+            print("No scores found.")
+
+
+
+
 # メイン関数
 def main():
     pygame.init()
@@ -147,10 +168,15 @@ def main():
             # ゲームオーバー
             if ball.rect.bottom >= HEIGHT:
                 running = False
+                # ゲームオーバー時にスコアを保存
+                score.save_score()
+
 
             all_sprites.draw(screen)
             pygame.display.flip()
             clock.tick(60)
+
+
 
 
 if __name__ == "__main__":
